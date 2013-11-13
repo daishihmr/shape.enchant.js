@@ -1,0 +1,61 @@
+<html>
+<head>
+<script src="https://rawgithub.com/uei/enchant.js-builds/v0.8.0/build/enchant.min.js"></script>
+<script src="shape.enchant.js"></script>
+<script>
+enchant();
+
+var core;
+window.onload = function() {
+    core = new Core(500, 250);
+    core.onload = main;
+    core.start();
+};
+
+var main = function() {
+    var scene = this.rootScene;
+    scene.backgroundColor = "black";
+
+    var rectangle = new Rectangle(50, 50);
+    rectangle.x = 100;
+    rectangle.y = 100;
+    scene.addChild(rectangle);
+
+    var triangle = new Triangle(50, 50, {
+        fillStyle: "green"
+    });
+    triangle.x = 150;
+    triangle.y = 100;
+    scene.addChild(triangle);
+
+    var circle = new Circle(25, {
+        strokeStyle: "aqua",
+        fillStyle: "yellow"
+    });
+    circle.x = 200;
+    circle.y = 100;
+    scene.addChild(circle);
+
+    var polygon = new Polygon(50, 50, {
+        fillStyle: "blue",
+        lineWidth: 1,
+        sides: 8
+    });
+    polygon.x = 250;
+    polygon.y = 100;
+    scene.addChild(polygon);
+
+    var star = new Star(50, 50, {
+        fillStyle: "orange",
+        sideIndent: 0.6
+    });
+    star.x = 300;
+    star.y = 100;
+    scene.addChild(star);
+
+};
+</script>
+</head>
+<body style="margin:0">
+</body>
+</html>
