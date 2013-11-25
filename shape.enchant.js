@@ -1,3 +1,27 @@
+/**
+ * @fileOverview
+ * shape.enchant.js
+ * @version 1.1
+ * @requries enchant.js v0.8.0 or later
+ * @author daishi_hmr
+ * 
+ * @description
+ * Simple shape sprite plugin.
+ *
+ * @example
+ * // create rectangle. width=80, height=40.
+ * ver rect = new Rectangle(80, 40);
+ *
+ * // create triangle. radius=30, color=red.
+ * ver tri = new Triangle(30, {
+ *     fillStyle: "rgb(255, 0, 0)"
+ * });
+ */
+
+/**
+ * @namespace
+ * @type {Object}
+ */
 enchant.shape = enchant.shape || {};
 
 (function() {
@@ -21,7 +45,17 @@ var extend = function(orig, over) {
     return result;
 };
 
+/**
+ * Rectangle shape sprite.
+ * @scope enchant.shape.Rectangle.prototype
+ */
 enchant.shape.Rectangle = enchant.Class.create(enchant.Sprite, {
+    /**
+     * @constructs
+     * @param width
+     * @param height
+     * @param options lineWidth, strokeStyle, fillStyle
+     */
     initialize: function(width, height, options) {
         options = extend(enchant.shape.DEFAULT_OPTIONS, options);
 
@@ -30,7 +64,7 @@ enchant.shape.Rectangle = enchant.Class.create(enchant.Sprite, {
         context.lineWidth = options.lineWidth;
         context.strokeStyle = options.strokeStyle;
         context.fillStyle = options.fillStyle;
-        context.rect(context.lineWidth/2, context.lineWidth/2, width-context.lineWidth, height-context.lineWidth);
+        context.rect(context.lineWidth, context.lineWidth, width-context.lineWidth*2, height-context.lineWidth*2);
         context.fill();
         context.stroke();
 
@@ -39,24 +73,33 @@ enchant.shape.Rectangle = enchant.Class.create(enchant.Sprite, {
     }
 });
 
+/**
+ * Polygon shape sprite.
+ * @scope enchant.shape.Polygon.prototype
+ */
 enchant.shape.Polygon = enchant.Class.create(enchant.Sprite, {
-    initialize: function(width, height, options) {
+    /**
+     * @constructs
+     * @param radius
+     * @param options lineWidth, strokeStyle, fillStyle, sides, offsetAngle
+     */ 
+    initialize: function(radius, options) {
         options = extend(enchant.shape.Polygon.DEFAULT_OPTIONS, options);
 
-        var texture = new enchant.Surface(width, height);
+        var texture = new enchant.Surface(radius*2, radius*2);
         var context = texture.context;
         context.lineWidth = options.lineWidth;
         context.strokeStyle = options.strokeStyle;
         context.fillStyle = options.fillStyle;
 
-        var radius = Math.min(width, height)/2 - context.lineWidth/2;
+        var radius0 = radius - context.lineWidth;
         var oa = options.offsetAngle - Math.PI/2;
 
         context.beginPath();
-        context.moveTo(width/2 + Math.cos(oa)*radius, height/2 + Math.sin(oa)*radius);
+        context.moveTo(radius + Math.cos(oa)*radius0, radius + Math.sin(oa)*radius0);
         for (var i = 1; i < options.sides; i++) {
             var a = 2*Math.PI / options.sides * i + oa;
-            context.lineTo(width/2 + Math.cos(a)*radius, height/2 + Math.sin(a)*radius);
+            context.lineTo(radius + Math.cos(a)*radius0, radius + Math.sin(a)*radius0);
         }
         context.closePath();
         context.fill();
@@ -71,15 +114,33 @@ enchant.shape.Polygon.DEFAULT_OPTIONS = extend(enchant.shape.DEFAULT_OPTIONS, {
     offsetAngle: 0
 });
 
+/**
+ * Triangle shape sprite.
+ * @scope enchant.shape.Triangle.prototype
+ */
 enchant.shape.Triangle = enchant.Class.create(enchant.shape.Polygon, {
-    initialize: function(width, height, options) {
+    /**
+     * @constructs
+     * @param radius
+     * @param options lineWidth, strokeStyle, fillStyle, offsetAngle
+     */
+    initialize: function(radius, options) {
         options = extend(enchant.shape.DEFAULT_OPTIONS, options);
         options.sides = 3;
-        enchant.shape.Polygon.call(this, width, height, options);
+        enchant.shape.Polygon.call(this, radius, options);
     }
 });
 
+/**
+ * Circle shape sprite.
+ * @scope enchant.shape.Circle.prototype
+ */
 enchant.shape.Circle = enchant.Class.create(enchant.Sprite, {
+    /**
+     * @constructs
+     * @param radius
+     * @param options lineWidth, strokeStyle, fillStyle
+     */
     initialize: function(radius, options) {
         options = extend(enchant.shape.DEFAULT_OPTIONS, options);
 
@@ -88,7 +149,7 @@ enchant.shape.Circle = enchant.Class.create(enchant.Sprite, {
         context.lineWidth = options.lineWidth;
         context.strokeStyle = options.strokeStyle;
         context.fillStyle = options.fillStyle;
-        context.arc(radius, radius, radius-context.lineWidth/2, 0, 2*Math.PI);
+        context.arc(radius, radius, radius-context.lineWidth, 0, 2*Math.PI);
         context.fill();
         context.stroke();
 
@@ -97,29 +158,38 @@ enchant.shape.Circle = enchant.Class.create(enchant.Sprite, {
     }
 });
 
+/**
+ * Star shape sprite.
+ * @scope enchant.shape.Star.prototype
+ */
 enchant.shape.Star = enchant.Class.create(enchant.Sprite, {
-    initialize: function(width, height, options) {
+    /**
+     * @constructs
+     * @param radius
+     * @param options lineWidth, strokeStyle, fillStyle, sides, sideIndent, offsetAngle
+     */
+    initialize: function(radius, options) {
         options = extend(enchant.shape.Star.DEFAULT_OPTIONS, options);
 
-        var texture = new enchant.Surface(width, height);
+        var texture = new enchant.Surface(radius*2, radius*2);
         var context = texture.context;
         context.lineWidth = options.lineWidth;
         context.strokeStyle = options.strokeStyle;
         context.fillStyle = options.fillStyle;
 
-        var radiusO = Math.min(width, height)/2 - context.lineWidth/2;
+        var radiusO = radius - context.lineWidth;
         var radiusI = radiusO * options.sideIndent;
 
         var angleUnit = 2*Math.PI / options.sides;
         var oa = options.offsetAngle - Math.PI/2;
 
         context.beginPath();
-        context.moveTo(width/2 + Math.cos(oa)*radiusO, height/2 + Math.sin(oa)*radiusO);
-        context.lineTo(width/2 + Math.cos(oa+angleUnit/2)*radiusI, height/2 + Math.sin(oa+angleUnit/2)*radiusI);
+        context.moveTo(radius + Math.cos(oa)*radiusO, radius + Math.sin(oa)*radiusO);
+        context.lineTo(radius + Math.cos(oa+angleUnit/2)*radiusI, radius + Math.sin(oa+angleUnit/2)*radiusI);
         for (var i = 1; i < options.sides; i++) {
             var a = angleUnit * i;
-            context.lineTo(width/2 + Math.cos(a+oa)*radiusO, height/2 + Math.sin(a+oa)*radiusO);
-            context.lineTo(width/2 + Math.cos(a+oa+angleUnit/2)*radiusI, height/2 + Math.sin(a+oa+angleUnit/2)*radiusI);
+            context.lineTo(radius + Math.cos(a+oa)*radiusO, radius + Math.sin(a+oa)*radiusO);
+            context.lineTo(radius + Math.cos(a+oa+angleUnit/2)*radiusI, radius + Math.sin(a+oa+angleUnit/2)*radiusI);
         }
         context.closePath();
         context.fill();
