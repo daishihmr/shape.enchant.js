@@ -7,7 +7,7 @@ enchant();
 
 var core;
 window.onload = function() {
-    core = new Core(500, 250);
+    core = new Core(380, 150);
     core.onload = main;
     core.start();
 };
@@ -16,43 +16,51 @@ var main = function() {
     var scene = this.rootScene;
     scene.backgroundColor = "black";
 
-    var rectangle = new Rectangle(50, 50);
-    rectangle.x = 100;
-    rectangle.y = 100;
+    // 矩形
+    var rectangle = new Rectangle(50, 30);
+    rectangle.moveTo(50, 50);
     scene.addChild(rectangle);
 
-    var triangle = new Triangle(50, 50, {
+    // 三角形
+    var triangle = new Triangle(25, {
         fillStyle: "green"
     });
-    triangle.x = 150;
-    triangle.y = 100;
+    triangle.moveTo(110, 50);
     scene.addChild(triangle);
 
+    // 円
     var circle = new Circle(25, {
-        strokeStyle: "aqua",
-        fillStyle: "yellow"
+        strokeStyle: "transparent",
+        fillStyle: (function() {
+            var gra = new Surface(50, 50).context.createRadialGradient(20, 20, 0, 20, 20, 75);
+            gra.addColorStop(0.0, "#ffffff");
+            gra.addColorStop(0.5, "#006600");
+            return gra;
+        })()
     });
-    circle.x = 200;
-    circle.y = 100;
+    circle.moveTo(170, 50);
     scene.addChild(circle);
 
-    var polygon = new Polygon(50, 50, {
+    // 多角形
+    var polygon = new Polygon(25, {
         fillStyle: "blue",
         lineWidth: 1,
         sides: 8
     });
-    polygon.x = 250;
-    polygon.y = 100;
+    polygon.moveTo(230, 50);
     scene.addChild(polygon);
 
-    var star = new Star(50, 50, {
+    // 星形
+    var star = new Star(25, {
         fillStyle: "orange",
         sideIndent: 0.6
     });
-    star.x = 300;
-    star.y = 100;
+    star.moveTo(290, 50);
     scene.addChild(star);
 
+    [rectangle, triangle, circle, polygon, star].forEach(function(elm) {
+        elm.onenterframe = function() { this.rotation += 1 };
+    });
 };
 </script>
 </head>
